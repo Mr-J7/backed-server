@@ -102,7 +102,7 @@ app.put('/:id', midAutenticacion.verificaToken, (req, res) => {
 
 
 // =====================================================================
-//  POST USUARIO - CREA UN NUEVO USUARIO NUEVO 
+//  POST USUARIO - CREA UN NUEVO USUARIO 
 // =====================================================================
 
 
