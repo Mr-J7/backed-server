@@ -159,8 +159,8 @@ app.delete('/:id', midAutenticacion.verificaToken, (req, res) => {
         if (!usuarioBorrado) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'No existe ningun un usuario con ese id',
-                errors: { message: 'No existe ningun un usuario con ese id' }
+                mensaje: 'No existe ningun usuario con ese id',
+                errors: { message: 'No existe ningun usuario con ese id' }
             });
         }
 

@@ -1,81 +1,83 @@
+const { model } = require("mongoose");
+
 var express = require('express');
 
-var Hospital = require('../models/hospital');
+var Medico = require('../models/medico');
 
 
 var app = express();
 
 
 // =====================================================================
-//  GET - OBTENER TODOS LOS HOSPITALES
+// GET - OBTENER MEDICOS
 // =====================================================================
-app.get('/', (req, res, next) => {
+app.get('/', (req, res) => {
 
 
-    Hospital.find((err, hospitales) => {
+    Medico.find((err, medicos) => {
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error cargando hospitales',
-                errors: err,
+                mensaje: 'Error al obtener medicos',
+                errors: err
             });
         }
 
         res.status(200).json({
             ok: true,
-            hospitales,
-
+            medicos
         });
 
     });
+
 });
 
+
+
 // =====================================================================
-// POST - CREAR UN NUEVO HOSPITAL
+// POST - CREAR UN MEDICO
 // =====================================================================
 app.post('/', (req, res) => {
 
     var body = req.body;
 
-    var hospitales = new Hospital({
+    var medicos = new Medico({
         nombre: body.nombre,
         img: body.img,
-        usuario: body.usuario
+        usuario: body.usuario,
+        hospital: body.hospital
     });
 
-    hospitales.save((err, hospitalesGuardados) => {
+    medicos.save((err, medicoGuardado) => {
 
         if (err) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Error al crear un hospital',
+                mensaje: 'Error al crear un medico',
                 errors: err
             });
         }
 
         res.status(201).json({
             ok: true,
-            hospitalesGuardados,
-
-        });
-
+            medicoGuardado
+        })
     });
 
 });
 
 
 
-
 // =====================================================================
-// PUT - ACTUALIZA UN HOSPITAL
+// PUT - ACTUALIZAR UN MEDICO
 // =====================================================================
 app.put('/:id', (req, res) => {
 
-    var body = req.body;
     var id = req.params.id;
+    var body = req.body;
 
-    Hospital.findById(id, (err, hospital) => {
+    Medico.findById(id, (err, medico) => {
 
         if (err) {
             return res.status(500).json({
@@ -85,76 +87,70 @@ app.put('/:id', (req, res) => {
             });
         }
 
-        if (!hospital) {
+        if (!medico) {
             return res.status(400).json({
-                ok: false,
-                mensaje: 'El hospital con el id:' + id + 'no existe',
-                errors: { message: 'No esiste el hospital con ese id' }
+                mensaje: 'El medico con el id: ' + id + 'no existe',
+                errors: err
             });
         }
 
-        hospital.nombre = body.nombre,
-            hospital.img = body.img,
-            hospital.usuario = body.usuario;
+
+        medico.nombre = body.nombre,
+            medico.img = body.img,
+            medico.usuario = body.usuario,
+            medico.hospital = body.hospital;
 
 
-        hospital.save((err, hospitalGuardado) => {
-
+        medico.save((err, medicoGuardado) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'Error al actualizar hospital',
-                    errors: err,
+                    mensaje: 'Error al actualizar medico',
+                    errors: err
                 });
             }
 
             res.status(200).json({
                 ok: true,
-                hospitalGuardado,
+                medicoGuardado
             });
-
         });
 
     });
-
 });
 
 
-
-
 // =====================================================================
-// DELETE - BORRAR HOSPITAL
+// DELETE - BORRAR MEDICO
 // =====================================================================
 app.delete('/:id', (req, res) => {
 
     var id = req.params.id;
 
-    Hospital.findByIdAndRemove(id, (err, hospitalBorrado) => {
-
+    Medico.findByIdAndRemove(id, (err, medicoBorrado) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error al borrar hospital',
+                mensaje: 'Error al borrar medico',
                 errors: err
             });
         }
 
-        if (!hospitalBorrado) {
-            return res.status(400).json({
-                ok: false,
+        if (!medicoBorrado) {
+            return res.status(201).json({
+                ok: true,
                 mensaje: 'No existe ningun medico con ese id',
                 errors: { message: 'No existe ningun medico con ese id' }
             });
         }
 
-
         res.status(201).json({
             ok: true,
-            hospitalBorrado
+            medicoBorrado
         });
-
     });
 });
+
 
 
 
