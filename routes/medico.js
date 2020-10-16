@@ -4,6 +4,9 @@ var express = require('express');
 
 var Medico = require('../models/medico');
 
+var mdAutenticacion = require('../middlewares/auntenticacion');
+
+
 
 var app = express();
 
@@ -38,7 +41,7 @@ app.get('/', (req, res) => {
 // =====================================================================
 // POST - CREAR UN MEDICO
 // =====================================================================
-app.post('/', (req, res) => {
+app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
 
@@ -61,6 +64,7 @@ app.post('/', (req, res) => {
 
         res.status(201).json({
             ok: true,
+            usuarioToken: req.usuario,
             medicoGuardado
         })
     });
@@ -72,7 +76,7 @@ app.post('/', (req, res) => {
 // =====================================================================
 // PUT - ACTUALIZAR UN MEDICO
 // =====================================================================
-app.put('/:id', (req, res) => {
+app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
@@ -123,7 +127,7 @@ app.put('/:id', (req, res) => {
 // =====================================================================
 // DELETE - BORRAR MEDICO
 // =====================================================================
-app.delete('/:id', (req, res) => {
+app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
 

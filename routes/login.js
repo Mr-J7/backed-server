@@ -43,9 +43,9 @@ app.post('/', (req, res) => {
                 errors: err
             });
         };
+        usuarioDB.password = '=)';
 
         // Crear un token con JWT
-        usuarioDB.password = '=)';
         var token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400 });
 
         res.status(200).json({

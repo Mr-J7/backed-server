@@ -3,6 +3,9 @@ var express = require('express');
 var Hospital = require('../models/hospital');
 
 
+var midAutenticacion = require('../middlewares/auntenticacion');
+
+
 var app = express();
 
 
@@ -34,7 +37,7 @@ app.get('/', (req, res, next) => {
 // =====================================================================
 // POST - CREAR UN NUEVO HOSPITAL
 // =====================================================================
-app.post('/', (req, res) => {
+app.post('/', midAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
 
@@ -56,6 +59,7 @@ app.post('/', (req, res) => {
 
         res.status(201).json({
             ok: true,
+            usuarioToken: req.usuario,
             hospitalesGuardados,
 
         });
@@ -70,7 +74,7 @@ app.post('/', (req, res) => {
 // =====================================================================
 // PUT - ACTUALIZA UN HOSPITAL
 // =====================================================================
-app.put('/:id', (req, res) => {
+app.put('/:id', midAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
     var id = req.params.id;
@@ -125,7 +129,7 @@ app.put('/:id', (req, res) => {
 // =====================================================================
 // DELETE - BORRAR HOSPITAL
 // =====================================================================
-app.delete('/:id', (req, res) => {
+app.delete('/:id', midAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
 
