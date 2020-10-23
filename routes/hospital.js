@@ -14,24 +14,31 @@ var app = express();
 // =====================================================================
 app.get('/', (req, res, next) => {
 
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
 
     Hospital.find((err, hospitales) => {
 
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                mensaje: 'Error cargando hospitales',
-                errors: err,
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error cargando hospitales',
+                    errors: err,
+                });
+            }
+
+            Hospital.count({}, (err, conteo) => {
+
+                res.status(200).json({
+                    ok: true,
+                    hospitales,
+                    total: conteo
+                });
             });
-        }
 
-        res.status(200).json({
-            ok: true,
-            hospitales,
-
-        });
-
-    });
+        }).populate('usuario', 'nombre email')
+        .skip(desde)
+        .limit(5);
 });
 
 // =====================================================================
@@ -43,8 +50,7 @@ app.post('/', midAutenticacion.verificaToken, (req, res) => {
 
     var hospitales = new Hospital({
         nombre: body.nombre,
-        img: body.img,
-        usuario: body.usuario
+        usuario: req.usuario._id,
     });
 
     hospitales.save((err, hospitalesGuardados) => {
@@ -59,7 +65,6 @@ app.post('/', midAutenticacion.verificaToken, (req, res) => {
 
         res.status(201).json({
             ok: true,
-            usuarioToken: req.usuario,
             hospitalesGuardados,
 
         });
@@ -98,8 +103,7 @@ app.put('/:id', midAutenticacion.verificaToken, (req, res) => {
         }
 
         hospital.nombre = body.nombre,
-            hospital.img = body.img,
-            hospital.usuario = body.usuario;
+            hospital.usuario = req.usuario._id;
 
 
         hospital.save((err, hospitalGuardado) => {

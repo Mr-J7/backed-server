@@ -16,23 +16,31 @@ var app = express();
 // =====================================================================
 app.get('/', (req, res) => {
 
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
 
     Medico.find((err, medicos) => {
 
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                mensaje: 'Error al obtener medicos',
-                errors: err
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error al obtener medicos',
+                    errors: err
+                });
+            }
+            Medico.count({}, (err, conteo) => {
+
+                res.status(200).json({
+                    ok: true,
+                    medicos,
+                    total: conteo
+                });
             });
-        }
 
-        res.status(200).json({
-            ok: true,
-            medicos
-        });
-
-    });
+        }).populate('usuario', 'nombre email')
+        .populate('hospital')
+        .skip(desde)
+        .limit(5);
 
 });
 
@@ -47,8 +55,7 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var medicos = new Medico({
         nombre: body.nombre,
-        img: body.img,
-        usuario: body.usuario,
+        usuario: req.usuario._id,
         hospital: body.hospital
     });
 
@@ -64,7 +71,6 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
         res.status(201).json({
             ok: true,
-            usuarioToken: req.usuario,
             medicoGuardado
         })
     });
@@ -100,8 +106,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
 
         medico.nombre = body.nombre,
-            medico.img = body.img,
-            medico.usuario = body.usuario,
+            medico.usuario = req.usuario._id,
             medico.hospital = body.hospital;
 
 
